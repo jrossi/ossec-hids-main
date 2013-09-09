@@ -245,13 +245,23 @@ void DecodeEvent(Eventinfo *lf)
                 {
                     if(nnode->order[i])
                     {
+                        Eventinfo_add_key_value(lf, nnode->order[i], nnode->regex->sub_strings[i]);
+                        #ifdef TESTRULE
+                        if(!alert_only)print_out("       %s: '%s'",nnode->order[i], nnode->regex->sub_strings[i]);
+                        #endif
+
+                        /* Need to free the sub_string as Eventinof add_key_value dups the string */
+                        os_free(nnode->regex->sub_strings[i]);
+                        /*
                         nnode->order[i](lf, nnode->regex->sub_strings[i]);
                         nnode->regex->sub_strings[i] = NULL;
+                        */
                         i++;
                         continue;
                     }
 
                     /* We do not free any memory used above */
+                    /* XXX This will need to change as eventinfo changes - Jeremy Rossi */
                     os_free(nnode->regex->sub_strings[i]);
                     nnode->regex->sub_strings[i] = NULL;
                     i++;

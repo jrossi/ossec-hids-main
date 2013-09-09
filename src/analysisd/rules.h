@@ -155,6 +155,7 @@ typedef struct _RuleInfo
     char *cve;
     RuleInfoDetail *info_details;
     ListRule *lists;
+    FieldCheckers *fchecker; 
 
     char *if_sid;
     char *if_level;
@@ -169,6 +170,11 @@ typedef struct _RuleInfo
 
 }RuleInfo;
 
+typedef struct _FieldCheckers {
+    char *field; 
+    void *matcher;
+    int  type; 
+}FieldCheckers;
 
 typedef struct _RuleNode
 {

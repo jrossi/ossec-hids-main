@@ -51,7 +51,8 @@ typedef struct
     OSMatch *program_name;
 
     void (*plugindecoder)(void *lf);
-    void (**order)(void *lf, char *field);
+    /*void (**order)(void *lf, char *field); */
+    char **order;
 }OSDecoderInfo;
 
 /* List structure */

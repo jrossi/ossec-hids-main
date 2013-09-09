@@ -533,8 +533,60 @@ void Zero_Eventinfo(Eventinfo *lf)
     lf->owner_after = NULL;
     lf->gowner_before = NULL;
     lf->gowner_after = NULL;
-
+    lf->kv = NULL; 
     return;
+}
+
+int Eventinfo_add_key_value(Eventinfo *lf, char *key, char *value) 
+{
+    struct Eventinfo_KV *item; 
+    HASH_FIND_STR(lf->kv, key, item);
+    if (item==NULL) 
+    {
+        item = (struct Eventinfo_KV*)malloc(sizeof(struct Eventinfo_KV));
+        os_strdup(key, item->key);
+        os_strdup(value, item->value);
+        HASH_ADD_KEYPTR( hh, lf->kv, item->key, strlen(item->key), item);
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
+int Eventinfo_has_key(Eventinfo *lf, char *key) {
+    struct Eventinfo_KV *item; 
+    HASH_FIND_STR(lf->kv, key, item);
+    if (item==NULL) 
+    {
+        return -1;
+    } else {
+        return 0; 
+    }
+}
+
+char *Eventinfo_get_key(Eventinfo *lf, char *key) {
+    struct Eventinfo_KV *item; 
+    char *rvalue;
+    HASH_FIND_STR(lf->kv, key, item);
+    if (item==NULL) 
+    {
+        return NULL;
+    } else {
+      os_strdup(item->value, rvalue);
+      return rvalue;
+    }
+}
+
+void Free_Eventinfo_kv(Eventinfo *lf)
+{
+    struct Eventinfo_KV *item; 
+    struct Eventinfo_KV *tmp; 
+    HASH_ITER(hh, lf->kv, item, tmp) {
+        HASH_DEL(lf->kv, item);
+        free(item->key);
+        free(item->value);
+        free(item);
+    }
 }
 
 /* Free the loginfo structure */

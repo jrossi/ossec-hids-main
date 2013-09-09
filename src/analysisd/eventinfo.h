@@ -18,6 +18,16 @@
 
 #include "rules.h"
 #include "decoders/decoder.h"
+#include "uthash.h"
+
+#define EVENTINFO_KV_MAX_KEY 64
+#define Eventinfo_KV_MAX_VALUE 900
+
+struct Eventinfo_KV {
+  UT_hash_handle hh; 
+  char *key;
+  char *value;
+};
 
 
 /* Event Information structure */
@@ -85,6 +95,7 @@ typedef struct _Eventinfo
     char *owner_after;
     char *gowner_before;
     char *gowner_after;
+    struct Eventinfo_KV *kv;
 }Eventinfo;
 
 
@@ -137,6 +148,9 @@ int alert_only;
 Eventinfo *Search_LastEvents(Eventinfo *lf, RuleInfo *currently_rule);
 Eventinfo *Search_LastSids(Eventinfo *my_lf, RuleInfo *currently_rule);
 Eventinfo *Search_LastGroups(Eventinfo *my_lf, RuleInfo *currently_rule);
+
+/* Eventinof Key Value Function */
+int Eventinfo_add_key_value(Eventinfo *lf, char *key, char *value);
 
 /* Zero the eventinfo structure */
 void Zero_Eventinfo(Eventinfo *lf);

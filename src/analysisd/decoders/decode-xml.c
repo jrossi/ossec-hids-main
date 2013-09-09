@@ -528,7 +528,7 @@ int ReadDecodeXML(char *file)
                 /* Maximum number is 8 for the order */
                 norder = OS_StrBreak(',',elements[j]->content, 8);
                 s_norder = norder;
-                os_calloc(8, sizeof(void *), pi->order);
+                os_calloc(8, sizeof(char *), pi->order);
 
 
                 /* Initializing the function pointers */
@@ -543,72 +543,7 @@ int ReadDecodeXML(char *file)
                 /* Checking the values from the order */
                 while(*norder)
                 {
-                    if(strstr(*norder, "dstuser") != NULL)
-                    {
-                        pi->order[order_int] = (void *)DstUser_FP;
-                    }
-                    else if(strstr(*norder, "srcuser") != NULL)
-                    {
-                        pi->order[order_int] = (void *)SrcUser_FP;
-                    }
-                    /* User is an alias to dstuser */
-                    else if(strstr(*norder, "user") != NULL)
-                    {
-                        pi->order[order_int] = (void *)DstUser_FP;
-                    }
-                    else if(strstr(*norder, "srcip") != NULL)
-                    {
-                        pi->order[order_int] = (void *)SrcIP_FP;
-                    }
-                    else if(strstr(*norder, "dstip") != NULL)
-                    {
-                        pi->order[order_int] = (void *)DstIP_FP;
-                    }
-                    else if(strstr(*norder, "srcport") != NULL)
-                    {
-                        pi->order[order_int] = (void *)SrcPort_FP;
-                    }
-                    else if(strstr(*norder, "dstport") != NULL)
-                    {
-                        pi->order[order_int] = (void *)DstPort_FP;
-                    }
-                    else if(strstr(*norder, "protocol") != NULL)
-                    {
-                        pi->order[order_int] = (void *)Protocol_FP;
-                    }
-                    else if(strstr(*norder, "action") != NULL)
-                    {
-                        pi->order[order_int] = (void *)Action_FP;
-                    }
-                    else if(strstr(*norder, "id") != NULL)
-                    {
-                        pi->order[order_int] = (void *)ID_FP;
-                    }
-                    else if(strstr(*norder, "url") != NULL)
-                    {
-                        pi->order[order_int] = (void *)Url_FP;
-                    }
-                    else if(strstr(*norder, "data") != NULL)
-                    {
-                        pi->order[order_int] = (void *)Data_FP;
-                    }
-                    else if(strstr(*norder, "extra_data") != NULL)
-                    {
-                        pi->order[order_int] = (void *)Data_FP;
-                    }
-                    else if(strstr(*norder, "status") != NULL)
-                    {
-                        pi->order[order_int] = (void *)Status_FP;
-                    }
-                    else if(strstr(*norder, "system_name") != NULL)
-                    {
-                        pi->order[order_int] = (void *)SystemName_FP;
-                    }
-                    else
-                    {
-                        ErrorExit("decode-xml: Wrong field '%s' in the order"
-                                  " of decoder '%s'",*norder,pi->name);
-                    }
+                    pi->order[order_int] = strdup(*norder);
 
                     free(*norder);
                     norder++;

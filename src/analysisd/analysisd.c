@@ -1509,6 +1509,33 @@ RuleInfo *OS_CheckIfRuleMatch(Eventinfo *lf, RuleNode *curr_node)
         }
     }
 
+    /* New Field matches */
+    if(currently_rule->fchecker != NULL) 
+    {
+        char *f = NULL;
+        FieldCheckers *check_holder=currently_rule->fchecker; 
+        while(check_holder) 
+        {
+            f = Eventinfo_get_key(lf, check_holder->field); 
+            if (f == NULL)
+            {
+                return(NULL);
+            } 
+            else if (check_holder->type == FIELD_MATCH) 
+            {
+                if (!OSMatch_Execute((OSMatch *)check_holder->matcher, strlen(f),f)) {
+                    return(NULL);
+                }
+            } 
+            else if (check_holder->type == FIELD_REGEX) {
+                if (!OSMatch_Execute((OSRegex *)check_holder->matcher, strlen(f),f)) {
+                    return(NULL);
+                }
+            } 
+            check_holder = check_holder->next; 
+        }
+    }
+
     /* List lookups */
     if(currently_rule->lists != NULL)
     {
