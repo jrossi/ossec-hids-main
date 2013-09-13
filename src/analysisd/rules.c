@@ -59,6 +59,76 @@ void Rules_OP_CreateRules()
     return;
 }
 
+/*
+ * Create new FieldChecked to be added to rules 
+ * Return NULL on error
+ */
+FieldChecker *fc_new() {
+    FieldChecker *fc; 
+    os_calloc(1, sizeof(FieldChecker), fc);
+    return fc; 
+}
+
+void fc_delete(FieldChecker *self)  {
+    if (self->match != NULL)
+        free(self->match);
+    if (self->regex != NULL)
+        free(self->regex);
+    if (self->field) 
+        free(self->regex);
+    free(self);
+}
+
+int fc_set_field(FieldChecker *self, char *field) {
+    os_strdup(self->field, field);
+    return(0);
+}
+
+int fc_set_match(FieldChecker *self, char *pattern) {
+
+    if(!OSMatch_Compile(pattern, self->match, 0))
+    {
+        merror(REGEX_COMPILE,
+               ARGV0,
+               pattern, 
+               self->match->error);
+        return(-1);
+    }
+    self->type = FC_TYPE_MATCH; 
+    return(0);
+}
+
+int fc_set_regex(FieldChecker *self, char *pattern) {
+    if(!OSRegex_Compile(pattern, self->regex, 0))
+    {
+        merror(REGEX_COMPILE,
+               ARGV0,
+               pattern, 
+               self->match->error);
+        return(-1);
+    }
+    self->type = FC_TYPE_REGEX; 
+    return(0);
+}
+
+
+
+
+int ri_add_pattern(RuleInfo *self, FieldChecker *fc) {
+    FieldChecker *tmp;
+    if (self->fchecker == NULL ) {
+        self->fchecker = fc; 
+        return (0);
+    }
+    do {
+        tmp = self->fchecker; 
+    } while (tmp->next != NULL);
+    tmp->next = fc;
+    return(0);
+}
+
+
+
 /* Rules_OP_ReadRules, v0.3, 2005/03/21
  * Read the log rules.
  * v0.3: Fixed many memory problems.
@@ -75,7 +145,9 @@ int Rules_OP_ReadRules(char * rulefile)
     char *xml_rule = "rule";
 
     char *xml_regex = "regex";
+    char *xml_regex_field = "field"; 
     char *xml_match = "match";
+    char *xml_match_field = "field"; 
     char *xml_decoded = "decoded_as";
     char *xml_category = "category";
     char *xml_cve = "cve";
@@ -373,6 +445,7 @@ int Rules_OP_ReadRules(char * rulefile)
                 char *regex = NULL;
                 char *match = NULL;
                 char *url = NULL;
+                FieldChecker *fchecker = NULL;
                 char *if_matched_regex = NULL;
                 char *if_matched_group = NULL;
                 char *user = NULL;
@@ -402,15 +475,55 @@ int Rules_OP_ReadRules(char * rulefile)
                         break;
                     else if(strcasecmp(rule_opt[k]->element,xml_regex)==0)
                     {
-                        regex =
-                            loadmemory(regex,
-                                    rule_opt[k]->content);
+                        debug1("-> %s == %s",rule_opt[k]->element, xml_list);
+                        if (rule_opt[k]->attributes && rule_opt[k]->values && rule_opt[k]->content)
+                        {
+                            if(strcasecmp(rule_opt[k]->attributes[0],xml_regex_field) == 0)
+                            {
+                                /* More Memory checking should be done nere with error reporting ****/
+                                fchecker = fc_new();
+                                fc_set_field(fchecker, rule_opt[j]->values[0]);
+                                fc_set_regex(fchecker, rule_opt[k]->content);
+                                ri_add_pattern(config_ruleinfo, fchecker);
+                            }
+                            else 
+                            {
+                                merror("%s: Invalid rule attr name: '%s'.", ARGV0, rule_opt[k]->attributes[0]);
+                                return(-1);
+                            }
+                        }
+                        else
+                        {
+                            regex =
+                                loadmemory(regex,
+                                        rule_opt[k]->content);
+                        }
                     }
                     else if(strcasecmp(rule_opt[k]->element,xml_match)==0)
                     {
-                        match =
-                            loadmemory(match,
-                                    rule_opt[k]->content);
+                        debug1("-> %s == %s",rule_opt[k]->element, xml_list);
+                        if (rule_opt[k]->attributes && rule_opt[k]->values && rule_opt[k]->content)
+                        {
+                            if(strcasecmp(rule_opt[k]->attributes[0],xml_match_field) == 0)
+                            {
+                                /* More Memory checking should be done nere with error reporting ****/
+                                fchecker = fc_new();
+                                fc_set_field(fchecker, rule_opt[j]->values[0]);
+                                fc_set_match(fchecker, rule_opt[k]->content);
+                                ri_add_pattern(config_ruleinfo, fchecker);
+                            }
+                            else 
+                            {
+                                merror("%s: Invalid rule attr name: '%s'.", ARGV0, rule_opt[k]->attributes[0]);
+                                return(-1);
+                            }
+                        }
+                        else 
+                        {
+                            match =
+                                loadmemory(match,
+                                        rule_opt[k]->content);
+                        }
                     }
                     else if(strcasecmp(rule_opt[k]->element, xml_decoded)==0)
                     {

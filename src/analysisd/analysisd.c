@@ -1513,7 +1513,7 @@ RuleInfo *OS_CheckIfRuleMatch(Eventinfo *lf, RuleNode *curr_node)
     if(currently_rule->fchecker != NULL) 
     {
         char *f = NULL;
-        FieldCheckers *check_holder=currently_rule->fchecker; 
+        FieldChecker *check_holder=currently_rule->fchecker; 
         while(check_holder) 
         {
             f = Eventinfo_get_key(lf, check_holder->field); 
@@ -1521,14 +1521,14 @@ RuleInfo *OS_CheckIfRuleMatch(Eventinfo *lf, RuleNode *curr_node)
             {
                 return(NULL);
             } 
-            else if (check_holder->type == FIELD_MATCH) 
+            else if (check_holder->type == FC_TYPE_MATCH) 
             {
-                if (!OSMatch_Execute((OSMatch *)check_holder->matcher, strlen(f),f)) {
+                if (!OSMatch_Execute(f, strlen(f), check_holder->match)) {
                     return(NULL);
                 }
             } 
-            else if (check_holder->type == FIELD_REGEX) {
-                if (!OSMatch_Execute((OSRegex *)check_holder->matcher, strlen(f),f)) {
+            else if (check_holder->type == FC_TYPE_REGEX) {
+                if (!OSRegex_Execute(f, check_holder->regex)) {
                     return(NULL);
                 }
             } 

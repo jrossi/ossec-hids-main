@@ -69,6 +69,18 @@
 
 #define MAX_RULEINFODETAIL  32
 
+
+#define FC_TYPE_MATCH  1
+#define FC_TYPE_REGEX  2
+
+typedef struct _FieldChecker {
+    char *field; 
+    OSMatch *match;
+    OSRegex *regex;
+    int  type; 
+    struct _FieldChecker *next;
+}FieldChecker;
+
 typedef struct _RuleInfoDetail
 {
     int type;
@@ -155,7 +167,7 @@ typedef struct _RuleInfo
     char *cve;
     RuleInfoDetail *info_details;
     ListRule *lists;
-    FieldCheckers *fchecker; 
+    FieldChecker *fchecker; 
 
     char *if_sid;
     char *if_level;
@@ -170,11 +182,6 @@ typedef struct _RuleInfo
 
 }RuleInfo;
 
-typedef struct _FieldCheckers {
-    char *field; 
-    void *matcher;
-    int  type; 
-}FieldCheckers;
 
 typedef struct _RuleNode
 {

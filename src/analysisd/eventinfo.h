@@ -151,6 +151,7 @@ Eventinfo *Search_LastGroups(Eventinfo *my_lf, RuleInfo *currently_rule);
 
 /* Eventinof Key Value Function */
 int Eventinfo_add_key_value(Eventinfo *lf, char *key, char *value);
+char *Eventinfo_get_key(Eventinfo *lf, char *key);  
 
 /* Zero the eventinfo structure */
 void Zero_Eventinfo(Eventinfo *lf);
