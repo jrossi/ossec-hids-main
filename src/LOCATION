@@ -1,4 +1,4 @@
 DIR="/var/ossec"
-CC=gcc
+CC=clang
 GCC=gcc
 CLANG=clang

@@ -168,14 +168,14 @@ int field_add_truncated(char *dest, int size, const char *format, const char *va
 
             len = snprintf(buffer, available_sz, format, truncated);
             strncat(dest, buffer, available_sz);
+            // Free the temporary pointer
+            free(truncated);
         }
         else {
             // Memory Error
             len = -3;
         }
     }
-    // Free the temporary pointer
-    free(truncated);
 
     return len;
 }

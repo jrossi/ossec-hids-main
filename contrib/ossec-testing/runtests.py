@@ -11,6 +11,7 @@ class OssecTester(object):
         self._ossec_conf = "/var/ossec/etc/ossec.conf"
         self._base_dir = "/var/ossec/"
         self._ossec_path = "/var/ossec/bin/"
+        self._ossec_path = "/home/jrossi/src/ossec-hids-main/src/analysisd/"
         self._test_path = "./tests" 
 
     def buildCmd(self, rule, alert, decoder):
@@ -21,7 +22,7 @@ class OssecTester(object):
         return cmd
 
     def runTest(self, log, rule, alert, decoder, section, name, negate=False):
-        print self.buildCmd(rule, alert, decoder)
+        #print self.buildCmd(rule, alert, decoder)
         p = subprocess.Popen(self.buildCmd(rule, alert, decoder),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
