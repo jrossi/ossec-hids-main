@@ -69,6 +69,7 @@ FieldChecker *fc_new() {
     return fc; 
 }
 
+
 void fc_delete(FieldChecker *self)  {
     if (self->match != NULL)
         free(self->match);
@@ -79,12 +80,15 @@ void fc_delete(FieldChecker *self)  {
     free(self);
 }
 
+
 int fc_set_field(FieldChecker *self, char *field) {
-    os_strdup(self->field, field);
+    os_strdup(field,self->field);
     return(0);
 }
 
+
 int fc_set_match(FieldChecker *self, char *pattern) {
+    if (self->match == NULL ) os_calloc(1, sizeof(OSMatch), self->match);
 
     if(!OSMatch_Compile(pattern, self->match, 0))
     {
@@ -98,7 +102,10 @@ int fc_set_match(FieldChecker *self, char *pattern) {
     return(0);
 }
 
+
 int fc_set_regex(FieldChecker *self, char *pattern) {
+    if (self->regex == NULL ) os_calloc(1, sizeof(OSRegex), self->regex);
+
     if(!OSRegex_Compile(pattern, self->regex, 0))
     {
         merror(REGEX_COMPILE,
@@ -112,12 +119,21 @@ int fc_set_regex(FieldChecker *self, char *pattern) {
 }
 
 
+FieldChecker *fcl_find_field(FieldChecker *root, char *field) {
+    FieldChecker *tmp = root; 
+    do {
+        if(strcasecmp(tmp->field, field) == 0) return tmp;
+        tmp = tmp->next; 
+    } while(tmp != NULL);
+    return NULL;
+}
 
 
 int ri_add_pattern(RuleInfo *self, FieldChecker *fc) {
     FieldChecker *tmp;
     if (self->fchecker == NULL ) {
         self->fchecker = fc; 
+        printf("fchecker added %s\n", fc->field);
         return (0);
     }
     do {
@@ -508,7 +524,7 @@ int Rules_OP_ReadRules(char * rulefile)
                             {
                                 /* More Memory checking should be done nere with error reporting ****/
                                 fchecker = fc_new();
-                                fc_set_field(fchecker, rule_opt[j]->values[0]);
+                                fc_set_field(fchecker, rule_opt[k]->values[0]);
                                 fc_set_match(fchecker, rule_opt[k]->content);
                                 ri_add_pattern(config_ruleinfo, fchecker);
                             }
