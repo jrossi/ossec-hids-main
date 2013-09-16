@@ -12,6 +12,8 @@ syntax: glob
 src/Config.OS
 src/headers/zconf.h
 src/headers/zlib.h
+src/headers/cJSON.h
+src/headers/uthash.h
 src/isbigendian.c
 src/analysisd/compiled_rules/compiled_rules.h
 
