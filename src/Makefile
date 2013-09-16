@@ -13,12 +13,13 @@ none:
 		@echo "\"make setagent\" to set agent install."
 		@echo "\"make setlocal\" to set local install."
 		@echo "\"make setclang\" to use clang for building ossec."
-		@echo "\"make unsetclang\" to use gcc for building ossec."
+		@echo "\"make setgcc\" to use gcc for building ossec."
 		@echo "\"make setprelude\" to enable prelude output."
 		@echo "\"make setdb\" to enable database support."
 		@echo "\"make unsetdb\" to disable database support."
 		@echo "\"make setoneway\" to enable one-way connection to the manager."
 		@echo "\"make setgeoip\" to enable source IP geolocalization."
+		@echo "\"make setzeromq\" to enable ZeroMQ Output."
 
 clean:
 		@/bin/sh ./Makeall clean
@@ -51,7 +52,7 @@ setclang:
 		@sed -e "s/^CC=.*/CC=clang/g" LOCATION.backup > LOCATION
 		@rm LOCATION.backup
 
-unsetclang:
+setgcc:
 		@mv LOCATION LOCATION.backup
 		@sed -e "s/^CC=.*/CC=gcc/g" LOCATION.backup > LOCATION
 		@rm LOCATION.backup
